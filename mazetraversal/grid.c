@@ -2,6 +2,7 @@
 #include "grid.h"
 #include <stdlib.h>
 
+//this reads the number of rows from the input file
 short get_m(FILE *input){
     short m = 0;
     fread(&m, 2, 1, input);
@@ -9,6 +10,7 @@ short get_m(FILE *input){
     return m;
 }
 
+//this reads the number of columns from the input file
 short get_n(FILE *input){
     short n = 0;
     fread(&n, 2, 1, input);
@@ -16,9 +18,10 @@ short get_n(FILE *input){
     return n;
 }
 
+//this reads the input file, creates a 2D array grid of shorts, and returns that grid
 short **make_grid(FILE *input, FILE *output1, short m, short n){
 
-    //initialize grid
+    //initialize 2D array for the grid
     short **grid = malloc(m * sizeof(short*));
     for (int x = 0; x < m; x++)
     {
@@ -69,6 +72,7 @@ void upward_heapify(heap_node **heap, int n){
     }
 }
 
+//downward heapify based on the element to be removed and the size of the heap
 void downward_heapify(heap_node **heap, int i, int n){
     heap_node *temp = heap[i];
     int j = 0;
@@ -87,6 +91,7 @@ void downward_heapify(heap_node **heap, int i, int n){
     heap[i] = temp;
 }
 
+//extract the minimum from the heap given its size
 short extract_min(heap_node **heap, int size){
     short min = heap[0]->idx;
     heap_node *temp;
@@ -98,6 +103,7 @@ short extract_min(heap_node **heap, int size){
     return min;
 }
 
+//this 
 void fastest_paths(FILE *output2, short **grid, short m, short n, FILE *output3){
     
     short * weights = malloc(sizeof(short) * m * n);
@@ -139,12 +145,10 @@ void fastest_paths(FILE *output2, short **grid, short m, short n, FILE *output3)
         temp = temp->prev;
     }
 
-    //fprintf(output3, "%lld\n", overall_min); 
     fwrite(&overall_min, sizeof(int), 1, output3);
-
-    //fprintf(output3, "%d\n", count);
     fwrite(&count, sizeof(int), 1, output3);
 
+    //reverses the path found so that its in the correct order
     reverse(fastest_path[best], output3, m, n);    
 
     free_path(fastest_path, n);
@@ -266,20 +270,8 @@ long long *dijkstra(short **grid, short *weights, short start, short m, short n,
             min = bottom_row[i];
         }
     }
-
-
-    //printf("start: %d\n", start);
-    //printf("fastest exit location on bottom: %d\n", min_idx);
     
     path_node * fastest_path_local = actual_path(heap, m, n, start, min_idx);
-
-    //test code to print the linked list of fastest paths
-    /*printf("middle func\n");
-    path_node *temp2 = fastest_path_local;
-    while(temp2 != NULL){
-        printf("%d \n", temp2->idx);
-        temp2 = temp2->prev;
-    }*/
 
     fastest_path[start] = fastest_path_local;
 
@@ -291,23 +283,18 @@ long long *dijkstra(short **grid, short *weights, short start, short m, short n,
 
 path_node * actual_path(heap_node **heap, short m, short n, short start, short end){
     
-    //printf("\nstarting from node: %d\n", start);
 
     path_node *path = create_path_node((m * n) - (n - end));
     path_node *temp = path;
-    //printf("starting node: %d\n", path->idx);
     
     int curr = (m * n) - (n - end);
     int y = m - 1;
     int prev = -1;
 
-    //printf("end: %d\n", curr);
-
     while(y > 0){
         prev = heap[find_in_heap(heap, m * n, curr)]->prev;
         temp->prev = create_path_node(prev);
         temp = temp->prev;
-        //printf("prev: %d\n", prev);
         curr = prev;
         
         y = curr / m - 1;
@@ -317,16 +304,8 @@ path_node * actual_path(heap_node **heap, short m, short n, short start, short e
         temp->prev = create_path_node(prev);
         temp = temp->prev;
         curr = prev;
-        //printf("prev: %d\n", prev);
     }
 
-    /*path_node *temp2 = path;
-    while(temp2 != NULL){
-        printf("%d \n", temp2->idx);
-        temp2 = temp2->prev;
-    }*/
-
-    //printf("\n");
     return path;
 }
 

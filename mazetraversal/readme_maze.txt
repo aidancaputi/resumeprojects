@@ -1,3 +1,8 @@
+This project was done for my Data Structures class during my junior year at Purdue and it is written
+in C.
+
+The class was taught by Professor Cheng-Kok Koh. 
+
 This project is essentially finding the fastest way out of a maze in which each point in the maze has a 
 designated amount of "time" that is required to be "spent" there.
 
